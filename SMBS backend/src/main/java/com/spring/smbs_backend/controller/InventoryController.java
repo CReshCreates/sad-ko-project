@@ -15,7 +15,7 @@ public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
 
-    @PostMapping("/product/createNewBatchOfProducts")
+    @PostMapping("/admin/product/createNewBatchOfProducts")
     public ResponseEntity<?> addBatch(@RequestBody AddBatchRequest addBatchRequest){
         return new ResponseEntity<>(inventoryService.addNewBatch(addBatchRequest), HttpStatus.OK);
     }

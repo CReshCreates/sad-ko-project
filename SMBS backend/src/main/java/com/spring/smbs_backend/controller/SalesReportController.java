@@ -17,7 +17,7 @@ public class SalesReportController {
     @Autowired
     private SalesReportService salesReportService;
 
-    @PostMapping("/sales-report")
+    @PostMapping("/admin/sales-report")
     @ResponseBody
     public SalesReportResponse salesReport(@RequestBody SalesReportRequest salesReportRequest) {
         int year = (salesReportRequest.getYear() != null) ? salesReportRequest.getYear() : LocalDate.now().getYear();

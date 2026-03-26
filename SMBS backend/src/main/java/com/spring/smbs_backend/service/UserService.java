@@ -1,6 +1,7 @@
 package com.spring.smbs_backend.service;
 
 import com.spring.smbs_backend.DTO.Request.LoginRequest;
+import com.spring.smbs_backend.DTO.Response.LoginResponse;
 import com.spring.smbs_backend.model.Cashier;
 import com.spring.smbs_backend.model.User;
 import com.spring.smbs_backend.repository.CashierRepository;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(12);
+
+    @Autowired
+    JwtService jwtService;
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -46,13 +51,23 @@ public class UserService {
         return savedUser;
     }
 
-    public ResponseEntity<?> verify(LoginRequest loginRequest) {
+    public LoginResponse verify(LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        if(authentication.isAuthenticated()) {
-            return ResponseEntity.ok().build();
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        if (authentication.isAuthenticated()) {
+
+            String role = userDetails.getAuthorities()
+                    .stream()
+                    .findFirst()
+                    .get()
+                    .getAuthority();
+
+            String token = jwtService.generateToken(userDetails.getUsername(), role);
+            return new LoginResponse(token, userDetails.getUsername(),  role);
         }
 
-        return ResponseEntity.unprocessableEntity().build();
+        return null;
     }
 }

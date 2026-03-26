@@ -30,7 +30,7 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("/customer/addNewCustomer")
+    @PostMapping("cashier/customer/addNewCustomer")
     public ResponseEntity<?> addNewCustomer(@RequestBody CustomerRegistrationRequest customer){
         if(customer == null){
             return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);

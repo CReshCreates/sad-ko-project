@@ -18,7 +18,7 @@ public class ProductController {
     private ProductService productsService;
 
     //getting products
-    @GetMapping("/product/getAllProducts")
+    @GetMapping("/admin/product/getAllProducts")
     public ResponseEntity<List<Product>> getAllProducts(){
         return new ResponseEntity<>(productsService.getAllProducts(), HttpStatus.OK);
     }
@@ -34,23 +34,23 @@ public class ProductController {
     }
 
     //getting stats
-    @GetMapping("/product/getTotalItemsCount")
+    @GetMapping("/admin/product/getTotalItemsCount")
     public ResponseEntity<?> getTotalItemsCount(){
         return new ResponseEntity<>(productsService.getAllProductsCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/product/getLowStockProductsCount")
+    @GetMapping("/admin/product/getLowStockProductsCount")
     public ResponseEntity<?> getLowStockProductsCount(){
         return new ResponseEntity<>(productsService.getLowStockProductsCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/product/getOnStockProductsCount")
+    @GetMapping("/admin/product/getOnStockProductsCount")
     public ResponseEntity<?> getOnStockProductsCount(){
         return new ResponseEntity<>(productsService.getOnStockProductsCount(), HttpStatus.OK);
     }
 
     //adding products
-    @PostMapping("/product/addNewProduct")
+    @PostMapping("/admin/product/addNewProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductAdditionRequest productAdditionRequest){
         try{
             Product product1 = productsService.addProducts(productAdditionRequest);
@@ -61,7 +61,7 @@ public class ProductController {
     }
 
     //updating product details
-    @PutMapping("/product/{barcode}")
+    @PutMapping("/admin/product/{barcode}")
     public ResponseEntity<?> updateProductByBarcode(@PathVariable String barcode, @RequestBody Product product){
         Product updatedProduct = productsService.updateProductByBarcode(barcode, product);
         if(updatedProduct!=null)

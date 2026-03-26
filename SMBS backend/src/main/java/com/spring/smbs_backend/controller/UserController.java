@@ -17,7 +17,7 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/registerUser")
+    @PostMapping("/admin/registerUser")
     public ResponseEntity<?> registerUser(@RequestBody RegisterRequest registerRequest) {
         User appuser = userService.validateAndRegister(registerRequest.getUser(),registerRequest.getCashier());
         if(appuser == null){
@@ -30,6 +30,10 @@ public class UserController {
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
-        return userService.verify(loginRequest);
+        try{
+            return new ResponseEntity<>(userService.verify(loginRequest), HttpStatus.OK);
+        }catch(Exception e){
+            return new ResponseEntity<>("Invalid username or password.", HttpStatus.UNAUTHORIZED);
+        }
     }
 }

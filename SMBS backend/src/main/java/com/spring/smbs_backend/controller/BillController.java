@@ -15,7 +15,7 @@ public class BillController {
     @Autowired
     private BillService billService;
 
-    @PostMapping("/bill/payment")
+    @PostMapping("/cashier/bill/payment")
     public ResponseEntity<?> payment(@RequestBody BillRequest billRequest) {
         try{
             Bill savedBill = billService.mainTransaction(billRequest);

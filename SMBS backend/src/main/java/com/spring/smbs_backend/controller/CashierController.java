@@ -16,7 +16,7 @@ public class CashierController {
     @Autowired
     private CashierService cashierService;
 
-    @GetMapping("/cashier/getAllCashiers")
+    @GetMapping("/admin/getAllCashiers")
     public ResponseEntity<?> getAllCashiers() {
         List<Cashier> cashiers = new ArrayList<>();
         cashiers = cashierService.getAllCashiers();
@@ -26,32 +26,32 @@ public class CashierController {
             return new ResponseEntity<>(cashiers, HttpStatus.OK);
     }
 
-    @GetMapping("/cashier/getAllSize")
+    @GetMapping("/admin/getAllSize")
     public ResponseEntity<Integer> getAllCashiersSize() {
         return new ResponseEntity<>(cashierService.getCashiersCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/cashier/getActiveSize")
+    @GetMapping("/admin/getActiveSize")
     public ResponseEntity<Integer> getActiveCashiersSize(){
         return new ResponseEntity<>(cashierService.getActiveCashiersCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/cashier/getInactiveSize")
+    @GetMapping("/a/getInactiveSize")
     public ResponseEntity<Integer> getInactiveCashiersSize(){
         return new ResponseEntity<>(cashierService.getInactiveCashiersCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/cashier/getOnShiftCashiers")
+    @GetMapping("/admin/getOnShiftCashiers")
     public ResponseEntity<Integer> getOnShiftCashiersSize(){
         return new ResponseEntity<>(cashierService.getOnShiftedCashiersCount(), HttpStatus.OK);
     }
 
-    @GetMapping("/cashier/getById/{Id}")
+    @GetMapping("/getCashierById/{Id}")
     public ResponseEntity<Cashier> getCashierById(@PathVariable int Id){
         return new ResponseEntity<>(cashierService.getCashierById(Id), HttpStatus.OK);
     }
 
-    @PutMapping("/cashier/update/{Id}")
+    @PutMapping("/admin/update/{Id}")
     public ResponseEntity<?> updateCashierById(@PathVariable int Id, @RequestBody Cashier cashier){
         Cashier updatedCashier = cashierService.updateCashier(Id, cashier);
         if (updatedCashier == null) {
@@ -62,7 +62,7 @@ public class CashierController {
         }
     }
 
-    @DeleteMapping("/cashier/delete/{Id}")
+    @DeleteMapping("/admin/delete/{Id}")
     public ResponseEntity<?> deleteCashierById(@PathVariable int Id){
         Cashier cashier = cashierService.getCashierById(Id);
         if(cashier == null){
