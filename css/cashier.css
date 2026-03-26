@@ -293,3 +293,12 @@ tbody tr{
     background: #b71c1c;
     transform: scale(1.1);
 }
+
+#username-field, #password-field{
+    width: 100%;
+}
+
+#username, #password{
+    padding: 10px;
+    width: 94%;
+}
