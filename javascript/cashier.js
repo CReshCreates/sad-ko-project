@@ -262,6 +262,8 @@ async function deleteCashier(id){
 
 function editCashier(id) {
     const c = cashiers.find(x => x.cashierId == id);
+    
+    console.log(c.name);
     document.getElementById("name").value = c.name;
     document.getElementById("address").value = c.address;
     document.getElementById("phone").value = c.phone;
@@ -277,4 +279,3 @@ function editCashier(id) {
     document.getElementById("popup").style.display = "block";
 
 }
-

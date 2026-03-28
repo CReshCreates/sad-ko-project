@@ -44,6 +44,10 @@ public class ProductService {
         return inventoryBatchRepository.countHighStockProducts(0);
     }
 
+    public int getOutOfStockProductsCount(){
+        return inventoryBatchRepository.countOutOfStockProducts();
+    }
+
     //adding products
     @Transactional
     public Product addProducts(ProductAdditionRequest productAdditionRequest){
@@ -73,5 +77,16 @@ public class ProductService {
         existingProduct.setBarcode(updatedProduct.getBarcode());
 
         return productsRepository.save(existingProduct);
+    }
+
+    public Product deleteProductByBarcode(String barcode){
+        try{
+            Product product = getProductsByBarcode(barcode);
+
+            product.setDeleted(true);
+            return productsRepository.save(product);
+        }catch(Exception e){
+            return null;
+        }
     }
 }

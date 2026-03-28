@@ -22,6 +22,7 @@ public class Product {
     private String barcode;
     private Float sellingPrice;
 
+    private boolean isDeleted = false;
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     private List<InventoryBatch> batches;

@@ -33,5 +33,15 @@ public interface InventoryBatchRepository extends JpaRepository<InventoryBatch, 
     Integer countHighStockProducts(@Param("threshold") int threshold);
 
     List<InventoryBatch> findByProductIdAndStockGreaterThanOrderByPurchaseDateAsc(Integer productId, int quantity);
+
+    @Query("""
+    SELECT COUNT(p)
+    FROM Product p
+    WHERE NOT EXISTS (
+        SELECT 1 FROM InventoryBatch b 
+        WHERE b.product = p AND b.stock > 0
+    )
+""")
+    int countOutOfStockProducts();
 }
 

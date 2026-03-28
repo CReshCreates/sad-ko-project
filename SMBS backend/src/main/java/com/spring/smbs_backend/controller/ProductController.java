@@ -49,6 +49,11 @@ public class ProductController {
         return new ResponseEntity<>(productsService.getOnStockProductsCount(), HttpStatus.OK);
     }
 
+    @GetMapping("/admin/product/getOutOfStockProductsCount")
+    public ResponseEntity<?> getOutOfStockProductsCount(){
+        return new ResponseEntity<>(productsService.getOutOfStockProductsCount(), HttpStatus.OK);
+    }
+
     //adding products
     @PostMapping("/admin/product/addNewProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductAdditionRequest productAdditionRequest){
@@ -61,11 +66,20 @@ public class ProductController {
     }
 
     //updating product details
-    @PutMapping("/admin/product/{barcode}")
+    @PutMapping("/admin/editProduct/{barcode}")
     public ResponseEntity<?> updateProductByBarcode(@PathVariable String barcode, @RequestBody Product product){
         Product updatedProduct = productsService.updateProductByBarcode(barcode, product);
         if(updatedProduct!=null)
             return new ResponseEntity<>("Updated", HttpStatus.OK);
+        else
+            return new ResponseEntity<>("Failed to update", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("/admin/deleteProduct/{barcode}")
+    public ResponseEntity<?> deleteProductByBarcode(@PathVariable String barcode){
+        Product product = productsService.deleteProductByBarcode(barcode);
+        if(product!=null)
+            return new ResponseEntity<>("Deleted", HttpStatus.OK);
         else
             return new ResponseEntity<>("Failed to update", HttpStatus.INTERNAL_SERVER_ERROR);
     }

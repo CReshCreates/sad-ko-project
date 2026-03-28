@@ -37,7 +37,7 @@
                     <img src="../image/cust.png" alt="">
                     <p>Total Customer</p>
                 </div>
-                <h3>365</h3>
+                <h3 id="total-customer">365</h3>
             </div>
 
             <div class="card">
@@ -45,7 +45,7 @@
                     <img src="../image/calender.png" alt="">
                     <p>Customer Arrived Today</p>
                 </div>
-                <h3>62</h3>
+                <h3 id="customer-arrived-today">62</h3>
             </div>
 
             <div class="card">
@@ -53,7 +53,7 @@
                     <img src="../image/time.png" alt="">
                     <p>Regular Customer</p>
                 </div>
-                <h3 style="color: greenyellow;">12</h3>
+                <h3 style="color: greenyellow;" id="regular-customer">12</h3>
             </div>
         </div>
 
@@ -77,45 +77,12 @@
                         <th>Name</th>
                         <th>Phone No</th>
                         <th>Address</th>
+                        <th>Last Visited</th>
                     </tr>
                 </thead>
 
-                <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>race</td>
-                        <td>120</td>
-                        <td>Rs.45</td>
-                    </tr>
-
-                    <tr>
-                        <td>Milk</td>
-                        <td>124</td>
-                        <td>123</td>
-                        <td>Rs.47</td>
-                    </tr>
-
-                    <tr>
-                        <td>Bread</td>
-                        <td>125</td>
-                        <td>120</td>
-                        <td>Rs.21</td>
-                    </tr>
-
-                    <tr>
-                        <td>Chips</td>
-                        <td>126</td>
-                        <td>120</td>
-                        <td>Rs.65</td>
-                    </tr>
-
-                    <tr>
-                        <td>Drinks</td>
-                        <td>130</td>
-                        <td>126</td>
-                        <td>Rs.89</td>
-                    </tr>
-                </tbody>
+                <tbody id="table-body"></tbody>
+                    
             </table>
 
             <div class="pagination">
@@ -127,15 +94,7 @@
             </div>
         </div>
     </div>
-<script>
-    function handleDropdown(select) {
-        if (select.value === "logout") {
-            window.location.href = "login.html";
-        }
-    }
-    window.onload = function () {
-        document.querySelector(".admin select").selectedIndex = 0;
-    };
+<script type="module" src="../javascript/customer.js">
 </script>
 </body>
 </html>
