@@ -17,7 +17,7 @@ async function login() {
   localStorage.setItem("role", data.role);
 
   if(data.role === "ROLE_ADMIN"){
-    window.location.href = "/pages/sales.html";
+    window.location.href = "/pages/dashboard.html";
   }else if(data.role === "ROLE_CASHIER"){
     window.location.href = ("/pages/cash.html")
   }else{

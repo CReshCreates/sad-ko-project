@@ -1,6 +1,7 @@
 package com.spring.smbs_backend.DTO.Response.Dashboard;
 
-public interface CustomerGrowthData {
+public interface SalesOverview {
     Integer getYear();
-    Integer getNumberOfCustomers();
+    Double getProfit();
+    Double getSales();
 }

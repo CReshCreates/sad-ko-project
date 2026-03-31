@@ -10,7 +10,7 @@ if(!token){
 }
 
 window.addEventListener("DOMContentLoaded", ()=>{
-    getData();
+    loadAvailableYears();
 })
 
 window.handleDropdown = function (select) {
@@ -33,6 +33,48 @@ function getHeaders(){
     };
 }
 
+async function loadAvailableYears(){
+    try{
+        const response = await fetch(`${BASE_URL}/admin/available-years`,{
+            method: "GET",
+            headers: getHeaders()
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const years = await response.json();
+
+        const yearSelect = document.getElementById('year');
+        yearSelect.innerHTML = '';
+
+        if(years.length == 0){
+            const option = document.createElement('option');
+            option.value = '';
+            option.textContent = 'No data available';
+            option.disabled = true;
+            yearSelect.appendChild(option);
+        }
+        else{
+            years.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearSelect.appendChild(option);
+            });
+
+            yearSelect.value = years[0];
+            getData();
+        }
+    }catch (error) {
+        console.error("Error loading available years:", error);
+        const yearSelect = document.getElementById('year');
+        if (yearSelect) {
+            yearSelect.innerHTML = '<option value="">Error loading years</option>';
+        }
+    }
+}
 
 async function getData(){
     const year = document.querySelector("#year").value;
@@ -55,6 +97,7 @@ async function getData(){
         loadStats(pageData.salesSummary);
         renderTable(pageData.products);
         createLineGraph(pageData.chart)
+        createBarGraph(pageData.topSellingProducts)
     }catch(err){
         console.log(err);
     }
@@ -147,10 +190,39 @@ function createLineGraph(chart){
         },
         options: {
             responsive: true,
-            maintainAspectRation: false,
+            maintainAspectRatio: false,
             plugins :{
                 positon: "top"
             }
         }
     })
+}
+
+function createBarGraph(data){
+     const ctx = document.getElementById('top-products');
+     
+     new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels : data.map(d => d.productName),
+            datasets : [
+                {
+                    label : 'Top Selling Products Of The Year',
+                    data : data.map(d => d.soldQuantity),
+                    backgroundColor: '#10AB3B',
+                    borderRadius : 6,
+                    borderWidth : 1
+                }
+            ]
+        },
+        opions: {
+            responsive : true,
+            maintainAspectRatio : false,
+            plugins: {
+                legend: {
+                    position: "top"
+                }
+            }
+        }
+     })
 }

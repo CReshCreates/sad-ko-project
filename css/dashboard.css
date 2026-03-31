@@ -94,6 +94,8 @@ body {
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  height: 40vh;
+  overflow: hidden;
 }
 
 /* TITLE */
@@ -104,7 +106,7 @@ body {
 
 /* CHART */
 .db-chart-box {
-  height: 200px;
+  height: 100%;
   background: linear-gradient(135deg, #cfd8e3, #e6ecf5);
   border-radius: 10px;
   display: flex;
@@ -152,6 +154,7 @@ body {
 /* TABLE */
 .db-table {
   width: 100%;
+  height: 100%;
   border-collapse: collapse;
   margin-top: 10px;
 }
@@ -165,6 +168,21 @@ body {
 .db-table td {
   padding: 8px;
   border-top: 1px solid #ddd;
+}
+
+
+#table-card{
+  background: #f4f7fb;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  height: 40vh;
+  overflow-y: auto;
+}
+
+
+#sales-overview, #customer-growth{
+  margin-bottom: 6vh;
 }
 
 /* RESPONSIVE */

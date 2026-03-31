@@ -2,6 +2,7 @@ package com.spring.smbs_backend.repository;
 
 import com.spring.smbs_backend.DTO.Response.SalesReport.ProductSales;
 import com.spring.smbs_backend.DTO.Response.SalesReport.SalesSummary;
+import com.spring.smbs_backend.DTO.Response.SalesReport.TopSellingProducts;
 import com.spring.smbs_backend.DTO.Response.SalesReport.YearlyProfit;
 import com.spring.smbs_backend.model.Bill;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -89,4 +90,29 @@ public interface SalesReportRepository extends JpaRepository<Bill, Integer> {
     ORDER BY YEAR(b.createdAt)
     """)
     List<YearlyProfit> getYearlyProfit();
+
+    @Query(value = """
+    SELECT 
+        p.name AS productName,
+        COALESCE(SUM(bi.quantity), 0) AS soldQuantity
+    FROM product p
+    JOIN bill_items bi ON p.product_id = bi.product_id
+    JOIN bill b ON bi.bill_id = b.bill_id
+    WHERE YEAR(b.created_at) = :year
+    GROUP BY p.product_id, p.name
+    ORDER BY COALESCE(SUM(bi.quantity), 0) DESC
+    LIMIT 5
+    """, nativeQuery = true)
+    List<TopSellingProducts> getTopSellingProductsCurrentYear(@Param("year") int year);
+
+    @Query(value = """
+        SELECT DISTINCT YEAR(created_at) AS year
+        FROM bill
+        WHERE EXISTS (
+            SELECT 1 FROM bill_items bi 
+            WHERE bi.bill_id = bill.bill_id
+        )
+        ORDER BY YEAR(created_at) DESC
+        """, nativeQuery = true)
+    List<Integer> getAvailableYears();
 }

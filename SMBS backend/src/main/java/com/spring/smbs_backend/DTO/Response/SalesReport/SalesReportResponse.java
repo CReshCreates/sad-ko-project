@@ -13,5 +13,5 @@ public class SalesReportResponse {
     private SalesSummary salesSummary;
     private List<ProductSales> products;
     private List<YearlyProfit> chart;
-
+    private List<TopSellingProducts> topSellingProducts;
 }

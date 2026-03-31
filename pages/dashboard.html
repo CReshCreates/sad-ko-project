@@ -6,7 +6,7 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/dashboard.css">
-    <title>Product</title>
+    <title>Dashboard</title>
 </head>
 <body style="background:rgb(206, 228, 248) ;">
     <div class="hornav">
@@ -36,62 +36,57 @@
             <div class="card">
                 <div class="card-header">
                     <img src="../image/dollar.png" alt="">
-                    <p>Total Sales</p>
+                    <p>Total Sales Today</p>
                 </div>
-                <h3>Rs.40,000</h3>
+                <h3 id="total-sales-today"></h3>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <img src="../image/cust.png" alt="">
-                    <p>Total Customer</p>
+                    <p>Total Customers Today</p>
                 </div>
-                <h3>365</h3>
+                <h3 id="total-customers-today"></h3>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <img src="../image/box.png" alt="">
-                    <p>Total Product Sold</p>
+                    <p>Products Sold Today</p>
                 </div>
-                <h3>472</h3>
+                <h3 id="products-sold-today"></h3>
             </div>
 
             <div class="card">
                 <div class="card-header">
                     <img src="../image/dollar.png" alt="">
-                    <p>Total Profit</p>
+                    <p>Total Profit Today</p>
                 </div>
-                <h3>Rs.8,000</h3>
+                <h3 id="total-profit-today"></h3>
             </div>
         </div>
         <div class="db-container">
             <!-- Sales Overview -->
             <div class="db-card">
                 <h3 class="db-title">Sales Overview</h3>
-                <div class="db-chart-box">Chart Here</div>
+                <canvas class="db-chart-box" id="sales-overview">Chart Here</canvas>
             </div>
 
             <!-- Top Products -->
-            <div class="db-card">
+            <div class="db-card" id="top-products">
                 <h3 class="db-title">Top Selling Products</h3>
-                <ul class="db-product-list">
-                <li class="db-product-item"><span>1. Milk</span><span>200 sold</span></li>
-                <li class="db-product-item"><span>2. Apples</span><span>185 sold</span></li>
-                <li class="db-product-item"><span>3. Drinks</span><span>150 sold</span></li>
-                <li class="db-product-item"><span>4. Bread</span><span>120 sold</span></li>
-                <li class="db-product-item"><span>5. Chips</span><span>80 sold</span></li>
+                <ul class="db-product-list" id="ul-list">
                 </ul>
             </div>
 
             <!-- Customer Growth -->
             <div class="db-card">
                 <h3 class="db-title">Customer Growth</h3>
-                <div class="db-chart-box">Chart Here</div>
+                <canvas class="db-chart-box" id="customer-growth"></canvas>
             </div>
 
             <!-- Active Cashiers -->
-            <div class="db-card">
+            <div class="db-card" id="table-card">
                 <div class="db-card-head">
                 <h3 class="db-title">Active Cashiers</h3>
                 <span class="db-status-indicator"></span>
@@ -105,27 +100,14 @@
                     <th>Phone Number</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr><td>123</td><td>Ram Sharma</td><td>9747777391</td></tr>
-                    <tr><td>124</td><td>Newaj Baral</td><td>9849011222</td></tr>
-                    <tr><td>125</td><td>Rahul KC</td><td>9736464321</td></tr>
-                    <tr><td>126</td><td>Kabir Dotel</td><td>9862357482</td></tr>
-                    <tr><td>127</td><td>Sabin Shrestha</td><td>9843843954</td></tr>
+                <tbody id="table-body">
                 </tbody>
                 </table>
             </div>
 
         </div>
     </div>
-    <script>
-        function handleDropdown(select) {
-            if (select.value === "logout") {
-                window.location.href = "login.html";
-        }
-        }
-        window.onload = function () {
-            document.querySelector(".admin select").selectedIndex = 0;
-        };
-    </script>
+    <script type="module" src="../javascript/dashboard.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
