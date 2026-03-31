@@ -4,16 +4,13 @@ const scanBtn = document.getElementById('scan-btn');
 const scannerContainer = document.getElementById('scanner-container');
 const barcodeInput = document.getElementById('barcode');
 
-console.log(scanBtn);
-
 
 window.addEventListener("DOMContentLoaded", ()=>{
-    console.log("This is product.js")
     loadTable();
     loadStats();
     const searchInput = document.getElementById("search-input");
     searchInput.addEventListener("input", () => {
-        render(); // re-render table on typing
+        render();
     })
 })
 
@@ -27,6 +24,94 @@ window.handleDropdown = function(select){
 
 window.closePopup = function(){
     document.getElementById("popup").style.display = "none";
+}
+
+window.addNewBatch = async function(){
+    let barcode = document.getElementById('barcode').value;
+    let stock = document.getElementById('qty').value;
+    let costPrice = document.getElementById('cprice').value;
+
+    if(!barcode || !stock || !costPrice){
+        alert("Please fill all the deails!!!");
+        return;
+    }
+
+    let purchaseDate =  new Date().toISOString().split('T')[0];
+    const data = {barcode, stock, costPrice, purchaseDate}
+
+    let response;
+
+    try{
+        response = await fetch(`${BASE_URL}/admin/product/createNewBatchOfProducts`, {
+            method: "POST",
+            headers : getHeader(),
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            const msg = await response.text();
+            alert("Error: " + msg);
+            return;
+        }
+
+        alert("Successfully added new batch");
+        document.getElementById('add-new-product').style.cursor = "pointer";
+        await loadTable();
+        await loadStats();
+    }catch(err){
+        console.log(err);
+    }
+    clearForm();
+}
+
+window.addNewProduct = async function(){
+    let barcode = document.getElementById('barcode').value;
+    let stock = Number(document.getElementById('qty').value);
+    let costPrice = Number(document.getElementById('cprice').value);
+    let name = document.getElementById('name').value;
+    let sellingPrice = Number(document.getElementById('sprice').value);
+
+    let purchaseDate = new Date().toISOString().split('T')[0];
+
+    let isDeleted = false;
+
+    const productData = {
+        product:{  
+            name,
+            barcode,
+            sellingPrice,
+            isDeleted,
+        },
+        inventoryBatch: {
+            stock,
+            costPrice,
+            purchaseDate
+        }
+    };
+
+    console.log(JSON.stringify(productData));
+
+    let response;
+
+    try{
+        response = await fetch(`${BASE_URL}/admin/product/addNewProduct`,{
+            method: "POST",
+            headers: getHeader(),
+            body: JSON.stringify(productData)
+        });
+
+        if(!response.ok){
+            alert("Error: " + await response.text());
+            return;
+        }
+
+        alert("Successfully added new product.");
+        document.getElementById('add-new-batch').style.cursor = "pointer";
+        await loadTable();
+        await loadStats();
+    }catch(err){
+        console.log(err);
+    }
+
 }
 
 let products = [];
@@ -83,9 +168,9 @@ function startScanner() {
     Quagga.init({
         inputStream: {
             type: "LiveStream",
-            target: scannerContainer, // camera feed goes inside blue box
+            target: scannerContainer,
             constraints: {
-                facingMode: "environment" // back camera
+                facingMode: "environment"
             }
         },
         decoder: {
@@ -110,11 +195,11 @@ function startScanner() {
 
 function fillForm(code){
     const productName = document.getElementById('name');
-    barcodeInput().value = code;
+    barcodeInput.value = code;
 
-    for(i=0; i<products.length; i++){
-        if(code === products.barcode){
-            productName.value = products.name;
+    for(let i=0; i<products.length; i++){
+        if(code === products[i].barcode){
+            productName.value = products[i].name;
             document.getElementById('add-new-product').style.cursor = "not-allowed";
         }else{
             document.getElementById('add-new-batch').style.cursor = "not-allowed";
@@ -132,7 +217,6 @@ function render(){
 
     const searchValue = document.getElementById("search-input").value.toLowerCase();
 
-    // FILTER PRODUCTS BY NAME
     const filteredProducts = products.filter(p =>
         p.name.toLowerCase().includes(searchValue)
     );
@@ -167,7 +251,7 @@ function render(){
         tbody.innerHTML += row;
     });
 
-    renderPagination(filteredProducts.length); // pass filtered length
+    renderPagination(filteredProducts.length);
     attachEvents();
 }
 
@@ -188,7 +272,7 @@ function renderPagination(totalItems){
 
     const pageCount = Math.ceil(totalItems / rowsPerPage);
 
-    // ✅ PREV BUTTON
+
     const prev = document.createElement("span");
     prev.innerText = "<";
     prev.classList.add("nav-btn"); // 🔥 ADD CLASS
@@ -206,15 +290,14 @@ function renderPagination(totalItems){
 
     pagination.appendChild(prev);
 
-    // ✅ PAGE NUMBERS
     for(let i = 1; i <= pageCount; i++){
         const page = document.createElement("span");
         page.innerText = i;
 
-        page.classList.add("num"); // 🔥 IMPORTANT (your CSS was here)
+        page.classList.add("num");
 
         if(i === currentPage){
-            page.classList.add("active-page"); // 🔥 ACTIVE STYLE
+            page.classList.add("active-page");
         }
 
         page.onclick = () => {
@@ -225,10 +308,9 @@ function renderPagination(totalItems){
         pagination.appendChild(page);
     }
 
-    // ✅ NEXT BUTTON
     const next = document.createElement("span");
     next.innerText = ">";
-    next.classList.add("nav-btn"); // 🔥 ADD CLASS
+    next.classList.add("nav-btn");
 
     if(currentPage === pageCount){
         next.classList.add("disabled");
@@ -282,4 +364,12 @@ function editProducts(barcode){
 window.onload = function () {
     document.querySelector(".admin select").selectedIndex = 0;
 };
+
+function clearForm(){
+    document.getElementById('barcode').value = "";
+    document.getElementById('name').value = "";
+    document.getElementById('qty').value = "";
+    document.getElementById('cprice').value = "";
+    document.getElementById('sprice').value = "";
+}
 
