@@ -30,8 +30,10 @@ public class SecurityConfig {
         return http.csrf(customizer -> customizer.disable())
                 .cors(cors -> {})
                 .authorizeHttpRequests(request -> request.requestMatchers( "/login").permitAll()
-                        .requestMatchers("/product/getByCode/**", "/admin/**", "/getCashierById/").hasRole("ADMIN")
-                        .requestMatchers("/cashier/**", "/getCashierById/").hasRole("CASHIER").anyRequest().authenticated())
+                        .requestMatchers( "/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/cashier/**").hasRole("CASHIER").
+                        requestMatchers("/product/getByCode/**", "/getCashierById/").hasAnyRole("ADMIN", "CASHIER")
+                        .anyRequest().authenticated())
 
 
                 .formLogin(customizer -> customizer.disable())

@@ -26,5 +26,5 @@ public class InventoryBatch {
     @JsonBackReference
     private Product product;
 
-    private int initialPurchase;
+    private Integer initialPurchase;
 }

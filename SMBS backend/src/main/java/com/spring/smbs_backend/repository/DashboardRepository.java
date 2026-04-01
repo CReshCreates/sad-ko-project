@@ -48,7 +48,7 @@ public interface DashboardRepository extends JpaRepository<Bill, Integer> {
     @Query(value = """
     SELECT 
         p.name AS productName,
-        SUM(bi.quantity) AS totalQuantitySold
+        SUM(bi.quantity) AS soldQuantity
     FROM product p
     JOIN bill_items bi ON p.product_id = bi.product_id
     JOIN bill b ON bi.bill_id = b.bill_id

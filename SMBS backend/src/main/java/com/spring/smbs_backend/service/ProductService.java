@@ -59,10 +59,11 @@ public class ProductService {
         inventoryBatch.setCostPrice(productAdditionRequest.getInventoryBatch().getCostPrice());
         inventoryBatch.setStock(productAdditionRequest.getInventoryBatch().getStock());
         inventoryBatch.setPurchaseDate(productAdditionRequest.getInventoryBatch().getPurchaseDate());
+        inventoryBatch.setInitialPurchase(productAdditionRequest.getInventoryBatch().getStock());
 
         inventoryBatchRepository.save(inventoryBatch);
 
-        return productsRepository.findById(product.getId()).get();
+        return productsRepository.findById(product.getId()).orElseThrow();
     }
 
     //updating products

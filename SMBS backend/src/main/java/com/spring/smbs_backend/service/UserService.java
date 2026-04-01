@@ -3,6 +3,7 @@ package com.spring.smbs_backend.service;
 import com.spring.smbs_backend.DTO.Request.LoginRequest;
 import com.spring.smbs_backend.DTO.Response.login.LoginResponse;
 import com.spring.smbs_backend.model.Cashier;
+import com.spring.smbs_backend.model.MyUserDetails;
 import com.spring.smbs_backend.model.User;
 import com.spring.smbs_backend.repository.CashierRepository;
 import com.spring.smbs_backend.repository.UserRepository;
@@ -54,7 +55,7 @@ public class UserService {
     public LoginResponse verify(LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 
         if (authentication.isAuthenticated()) {
 
@@ -63,9 +64,15 @@ public class UserService {
                     .findFirst()
                     .get()
                     .getAuthority();
+            Integer id = null;
+            try{
+                id = cashierRepository.findCashierIdByUserId(userDetails.getUserId());
+            }catch(Exception e){
+                System.out.println("Cashier ID not found for userId=" + userDetails.getUserId());
+            }
 
             String token = jwtService.generateToken(userDetails.getUsername(), role);
-            return new LoginResponse(token, userDetails.getUsername(),  role);
+            return new LoginResponse(token, userDetails.getUsername(),  role, id);
         }
 
         return null;

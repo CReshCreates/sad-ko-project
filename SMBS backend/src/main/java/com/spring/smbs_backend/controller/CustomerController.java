@@ -2,7 +2,6 @@ package com.spring.smbs_backend.controller;
 
 import com.spring.smbs_backend.DTO.Request.CustomerRegistrationRequest;
 import com.spring.smbs_backend.DTO.Response.CustomerDetails.CustomerDetailsResponse;
-import com.spring.smbs_backend.DTO.Response.BillGeneration.CustomerDetailsForBillProcessingResponse;
 import com.spring.smbs_backend.model.Customer;
 import com.spring.smbs_backend.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +19,7 @@ public class CustomerController {
     @Autowired
     CustomerService customerService;
 
-    @GetMapping("/customer/getByPhone/{phone}")
+    @GetMapping("/cashier/getByPhone/{phone}")
     public ResponseEntity<?> getCustomerByPhone(@PathVariable String phone){
         Customer customer = customerService.getCustomerByPhone(phone);
         if(customer == null){
@@ -36,7 +35,7 @@ public class CustomerController {
         if(customer == null){
             return new ResponseEntity<>(customer, HttpStatus.BAD_REQUEST);
         }
-        CustomerDetailsForBillProcessingResponse response = customerService.addAndReturnCustomerDetails(customer);
+        Customer response = customerService.addAndReturnCustomerDetails(customer);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

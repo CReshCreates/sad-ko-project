@@ -16,7 +16,7 @@ public interface InventoryBatchRepository extends JpaRepository<InventoryBatch, 
            FROM product p
            JOIN inventory_batch b ON p.product_id = b.product_id
            GROUP BY p.product_id
-           HAVING SUM(b.stock) <= :threshold
+           HAVING SUM(b.stock) <= :threshold AND SUM(b.stock) > 0
        ) AS low_stock
        """, nativeQuery = true)
     Integer countLowStockProducts(@Param("threshold") int threshold);

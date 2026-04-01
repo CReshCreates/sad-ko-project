@@ -1,7 +1,6 @@
 package com.spring.smbs_backend.service;
 
 import com.spring.smbs_backend.DTO.Request.CustomerRegistrationRequest;
-import com.spring.smbs_backend.DTO.Response.BillGeneration.CustomerDetailsForBillProcessingResponse;
 import com.spring.smbs_backend.DTO.Response.CustomerDetails.CustomerDetailsResponse;
 import com.spring.smbs_backend.model.Customer;
 import com.spring.smbs_backend.repository.BillRepository;
@@ -25,7 +24,7 @@ public class CustomerService {
         return customerRepository.findByPhone(phone);
     }
 
-    public CustomerDetailsForBillProcessingResponse addAndReturnCustomerDetails(CustomerRegistrationRequest customer){
+    public Customer addAndReturnCustomerDetails(CustomerRegistrationRequest customer){
         Customer existingCustomer = customerRepository.findByPhone(customer.getPhone());
         if(existingCustomer != null){
             throw new RuntimeException("Customer already exists");
@@ -39,10 +38,10 @@ public class CustomerService {
 
         customerRepository.save(savedCustomer);
 
-        CustomerDetailsForBillProcessingResponse customerDetails = new CustomerDetailsForBillProcessingResponse();
+        Customer customerDetails = new Customer();
         customerDetails.setCustomerId(savedCustomer.getCustomerId());
-        customerDetails.setCustomerName(savedCustomer.getName());
-        customerDetails.setPhoneNumber(savedCustomer.getPhone());
+        customerDetails.setName(savedCustomer.getName());
+        customerDetails.setPhone(savedCustomer.getPhone());
 
         return customerDetails;
     }

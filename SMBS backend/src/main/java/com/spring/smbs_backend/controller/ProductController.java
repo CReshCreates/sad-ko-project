@@ -58,6 +58,7 @@ public class ProductController {
     @PostMapping("/admin/product/addNewProduct")
     public ResponseEntity<?> addProduct(@RequestBody ProductAdditionRequest productAdditionRequest){
         try{
+            System.out.println(productAdditionRequest);
             Product product1 = productsService.addProducts(productAdditionRequest);
             return new ResponseEntity<>(product1, HttpStatus.OK);
         }catch(Exception e){
