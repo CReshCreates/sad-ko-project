@@ -25,12 +25,23 @@
       color: #fcfcfc;
     }
     .cashier-badge {
+      display: flex;
+      align-items: center;
+      gap:1vw;
       background: #eef2ff;
       padding: 6px 16px;
       border-radius: 40px;
       font-weight: 500;
       font-size: 0.85rem;
       color: #1e40af;
+    }
+    #logout-btn{
+      max-height: 5vh;
+      border-style: none;
+      cursor: pointer;
+    }
+    #logout-btn img{
+      max-height: 4vh;
     }
     .pos-container {
       display: grid;

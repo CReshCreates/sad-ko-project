@@ -1,3 +1,7 @@
+CREATE DATABASE smbs;
+
+USE smbs;
+
 CREATE TABLE User (
     user_id INT AUTO_INCREMENT PRIMARY KEY NOT NULL,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -32,7 +36,8 @@ CREATE TABLE Product (
     product_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     barcode VARCHAR(50) UNIQUE,
-    selling_price DECIMAL(10,2) NOT NULL
+    selling_price DECIMAL(10,2) NOT NULL,
+    is_deleted boolean
 );
 
 CREATE TABLE Inventory_Batch (
@@ -41,6 +46,7 @@ CREATE TABLE Inventory_Batch (
     cost_price DECIMAL(10,2) NOT NULL,
     purchase_date DATE,
     stock INT DEFAULT 0,
+    initial_purchase int,
 
     FOREIGN KEY (product_id) REFERENCES Product(product_id)
         ON DELETE CASCADE
@@ -50,7 +56,8 @@ CREATE TABLE Customer (
     customer_id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     phone VARCHAR(20),
-    address TEXT
+    address TEXT,
+    last_visited date
 );
 
 CREATE TABLE Bill (
@@ -74,12 +81,14 @@ CREATE TABLE Bill_Items (
     quantity INT NOT NULL,
     selling_price DECIMAL(10,2) NOT NULL,
     cost_price DECIMAL(10,2) NOT NULL,
-    subtotal DECIMAL(10,2) NOT NULL,
+    batch_id int NOT NULL,
 
     FOREIGN KEY (bill_id) REFERENCES Bill(bill_id)
         ON DELETE CASCADE,
 
-    FOREIGN KEY (product_id) REFERENCES Product(product_id)
+    FOREIGN KEY (product_id) REFERENCES Product(product_id),
+
+    FOREIGN KEY (batch_id) REFERENCES inventory_batch(batch_id)
 );
 
 CREATE INDEX idx_bill_date ON Bill(created_at);

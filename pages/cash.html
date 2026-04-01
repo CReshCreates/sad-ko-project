@@ -4,16 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Supermarket Billing System | Smart POS</title>
-  <script src="../javascript/script.js" defer></script>
-  <!-- QuaggaJS for barcode scanning -->
-  <script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
   <link rel="stylesheet" href="../css/cashierdb.css">
 </head>
 <body>
 
 <div class="navbar">
   <div class="logo"> SuperMarket Billing System</div>
-  <div class="cashier-badge">Cashier: <strong id="cashierName">John Carter</strong></div>
+  <div class="cashier-badge">Cashier: <strong id="cashierName">John Carter</strong><button id="logout-btn" onclick="logout()"><img src="../image/logout.png"></button></div>
 </div>
 
 <div class="pos-container">
@@ -23,7 +20,7 @@
     <div class="card">
       <div class="card-header"> Barcode Scanner</div>
       <div class="scanner-preview">
-        <div id="scannerContainer" style="width:100%; height:180px; background:#000;"></div>
+        <div id="scannerContainer" style="width:100%; height:230px; background:#000;"></div>
       </div>
       <div class="scanner-controls">
         <button id="startScannerBtn" class="btn btn-primary"> Start Camera</button>
@@ -43,8 +40,6 @@
         <div class="info-field"><label>Name</label><div class="value" id="dispName">—</div></div>
         <div class="info-field"><label>Barcode</label><div class="value" id="dispBarcode">—</div></div>
         <div class="info-field"><label>Price (Rs.)</label><div class="value" id="dispPrice">—</div></div>
-        <div class="info-field"><label>Expiry Date</label><div class="value" id="dispExpiry">—</div></div>
-        <div class="info-field"><label>Stock</label><div class="value" id="dispStock">—</div></div>
       </div>
       <div class="qty-row">
         <label>Quantity:</label>
@@ -83,6 +78,24 @@
         <label><input type="radio" name="paymentMethod" value="Cash" checked>  Cash</label>
         <label><input type="radio" name="paymentMethod" value="Card">  Card</label>
         <label><input type="radio" name="paymentMethod" value="Digital">  Digital Wallet</label>
+      </div>
+    </div>
+
+    <div class="card" id="cashHandlingCard">
+      <div class="card-header">Cash Handling</div>
+      <div class="cash-handling">
+        <div class="amount-row">
+          <label>Net Payable:</label>
+          <span id="payNetAmount" class="net-amount">Rs. 0.00</span>
+        </div>
+        <div class="amount-row">
+          <label>Amount Paid:</label>
+          <input type="number" id="paidAmountInput" placeholder="Enter amount paid" step="0.01" min="0" value="0">
+        </div>
+        <div class="amount-row">
+          <label>Change to Return:</label>
+          <span id="changeAmountDisplay" class="change-amount">Rs. 0.00</span>
+        </div>
       </div>
     </div>
 
@@ -137,5 +150,9 @@
   </div>
 </div>
 
+
+  <script type="module" src="../javascript/cash.js" defer></script>
+  <!-- QuaggaJS for barcode scanning -->
+  <script src="https://unpkg.com/quagga/dist/quagga.min.js"></script>
 </body>
 </html>

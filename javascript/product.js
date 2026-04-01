@@ -18,6 +18,9 @@ window.addEventListener("DOMContentLoaded", ()=>{
 window.handleDropdown = function(select){
     if (select.value === "logout") {
         localStorage.removeItem("token");
+        localStorage.removeItem("role");
+        localStorage.removeItem("username");
+        localStorage.removeItem("cashierId");
         window.location.href = "login.html";
     }
 }
@@ -69,6 +72,11 @@ window.addNewProduct = async function(){
     let costPrice = Number(document.getElementById('cprice').value);
     let name = document.getElementById('name').value;
     let sellingPrice = Number(document.getElementById('sprice').value);
+
+    if(!barcode || !stock || !costPrice || !name || !sellingPrice){
+        alert("Please fill all the details!!!");
+        return;
+    }
 
     let purchaseDate = new Date().toISOString().split('T')[0];
 
@@ -338,6 +346,7 @@ async function loadStats(){
 }
 
 async function deleteProduct(barcode){
+    console.log(barcode);
     if(!confirm("Are you sure?")) return;
 
     await fetch(`${BASE_URL}/admin/deleteProductByBarcode/${barcode}`,{

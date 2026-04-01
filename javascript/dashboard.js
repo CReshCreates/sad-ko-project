@@ -11,7 +11,10 @@ window.addEventListener("DOMContentLoaded", ()=>{
 
 window.handleDropdown = function (select){
     if(select.value === 'logout'){
-        localStorage.removeItem('token');
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("cashierId");
         window.location.href = 'login.html';
     }
 }
@@ -63,14 +66,14 @@ function loadStats(stats){
 function topSellingProducts(data){
     let container = document.getElementById('ul-list');
     container.innerHTML = "";
-    console.log(container);
+    console.log(data);
 
     if(data.length ==0){
         container.innerHTML = `<li>No products sold today<li>`
     }
     else{
         data.forEach((d, index) =>{
-            container.innerHTML += `<li class="db-product-item><span>${index + 1} ${d.productName}</span><span>${d.soldQuantity} sold</span></li>`;
+            container.innerHTML += `<li class="db-product-item"><span>${index + 1} ${d.productName}</span><span>${d.soldQuantity} sold</span></li>`;
         })
     }
 }

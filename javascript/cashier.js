@@ -90,7 +90,10 @@ window.saveCashier = async function (){
 
 window.handleDropdown = function (select) {
     if (select.value === "logout") {
-        localStorage.removeItem("token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("cashierId");
         window.location.href = "login.html";
     }
 };

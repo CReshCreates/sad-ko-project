@@ -1,6 +1,21 @@
+import { BASE_URL } from "./config.js";
+
+const token = localStorage.getItem("token");
+if(!token){
+  window.location.replace("login.html");
+}
+
+window.logout = function(){
+  localStorage.removeItem("token");
+  localStorage.removeItem("role");
+  localStorage.removeItem("username");
+  localStorage.removeItem("cashierId");
+  window.location.href = "login.html"
+}
 
   let selectedProduct = null;
-  let cartItems = [];         // { product_id, name, unitPrice, qty, total }
+  let cartItems = [];  
+  let cartItemsToPrint = [];       // { product_id, name, unitPrice, qty, total }
   let currentCustomer = null;
   let currentDiscount = 0;
   let currentPaymentMethod = "Cash";
@@ -15,13 +30,11 @@
   const dispName = document.getElementById("dispName");
   const dispBarcode = document.getElementById("dispBarcode");
   const dispPrice = document.getElementById("dispPrice");
-  const dispExpiry = document.getElementById("dispExpiry");
-  const dispStock = document.getElementById("dispStock");
   const productQty = document.getElementById("productQty");
   const addToCartBtn = document.getElementById("addToCartBtn");
   const clearProductBtn = document.getElementById("clearProductBtn");
   const cartBody = document.getElementById("cartBody");
-  const subtotalSpan = document.getElementById("subtotalAmount");
+  const subtotalSpan = document.getElementById("totalAmount");
   const discountInput = document.getElementById("discountInput");
   const netTotalAmountSpan = document.getElementById("netTotalAmount");
   const clearCartBtn = document.getElementById("clearCartBtn");
@@ -31,10 +44,6 @@
   const digitalField = document.getElementById("digitalField");
   const customerPhoneInput = document.getElementById("customerPhoneInput");
   const fetchCustomerBtn = document.getElementById("fetchCustomerBtn");
-  const custIdSpan = document.getElementById("custId");
-  const custNameSpan = document.getElementById("custName");
-  const custPhoneSpan = document.getElementById("custPhone");
-  const custAddressSpan = document.getElementById("custAddress");
   const newCustomerPanel = document.getElementById("newCustomerPanel");
   const showAddCustomerBtn = document.getElementById("showAddCustomerBtn");
   const saveNewCustomerBtn = document.getElementById("saveNewCustomerBtn");
@@ -48,24 +57,58 @@
   const billCustAddr = document.getElementById("billCustAddr");
   const billItemsBody = document.getElementById("billItemsBody");
   const billTotalSpan = document.getElementById("billTotalSpan");
-  const billDiscountSpan = document.getElementById("billDiscountSpan");
   const billNetSpan = document.getElementById("billNetSpan");
   const billMethodSpan = document.getElementById("billMethodSpan");
+  const username = document.getElementById('cashierName').innerText = localStorage.getItem("username");
 
   // Helper: find product by barcode
   function findProductByBarcode(barcode) {
-    return productsDB.find(p => p.barcode === barcode) || null;
+    return getProducts(barcode);
+  }
+
+  async function getProducts(barcode){
+    try{
+      let response = await fetch(`${BASE_URL}/product/getByCode/${barcode}`,{
+        method: "GET",
+        headers: getHeaders()
+      });
+
+      if(!response.ok){
+        if(response.status === 404){
+          return null;
+        }
+        else{
+          alert("Error: " + response.text());
+          return;
+        }
+      }
+      const data = await response.json();
+      
+       if (Array.isArray(data) && data.length > 0) {
+            return data[0];
+        }
+    }
+    catch(err){
+      console.log(err);
+    }
+  }
+
+  function getHeaders(){
+    const token = localStorage.getItem("token");
+
+    return{
+      "Content-Type" : "application/json",
+      "Authorization" : `Bearer ${token}`
+    };
   }
 
   // Display product in left panel
-  function displayProduct(product) {
+  async function displayProduct(product) {
     selectedProduct = product;
-    dispId.innerText = product.product_id;
+    dispId.innerText = product.Id;
     dispName.innerText = product.name;
     dispBarcode.innerText = product.barcode;
-    dispPrice.innerText = `Rs. ${product.price}`;
-    dispExpiry.innerText = product.expiry_date;
-    dispStock.innerText = product.stock;
+    dispPrice.innerText = `Rs. ${product.sellingPrice}`;
     addToCartBtn.disabled = false;
   }
 
@@ -75,8 +118,6 @@
     dispName.innerText = "—";
     dispBarcode.innerText = "—";
     dispPrice.innerText = "—";
-    dispExpiry.innerText = "—";
-    dispStock.innerText = "—";
     addToCartBtn.disabled = true;
     productQty.value = 1;
   }
@@ -109,12 +150,19 @@
       delBtn.onclick = () => removeCartItem(item.product_id);
       delCell.appendChild(delBtn);
     });
+    
     subtotalSpan.innerText = `Rs. ${total.toFixed(2)}`;
-    const discountVal = parseFloat(discountInput.value) || 0;
-    const net = Math.max(0, total - discountVal);
-    netTotalAmountSpan.innerText = `Rs. ${net.toFixed(2)}`;
-    payNetAmount.value = `Rs. ${net.toFixed(2)}`;
-    currentDiscount = discountVal;
+
+    if (netTotalAmountSpan) {
+    netTotalAmountSpan.innerText = `Rs. ${total.toFixed(2)}`;
+    }
+
+    if (payNetAmount) {
+      payNetAmount.innerText = `Rs. ${total.toFixed(2)}`;
+    }
+
+
+    
     updatePaymentChange();
     updateBillPreview();
   }
@@ -141,21 +189,19 @@
     if (!selectedProduct) return;
     let qty = parseInt(productQty.value);
     if (isNaN(qty) || qty < 1) qty = 1;
-    if (qty > selectedProduct.stock) {
-      alert(`Only ${selectedProduct.stock} items in stock!`);
-      return;
-    }
-    const existing = cartItems.find(i => i.product_id === selectedProduct.product_id);
+    console.log(cartItems);
+    const existing = cartItems.find(i => i.product_id === selectedProduct.Id);
     if (existing) {
       existing.qty += qty;
       existing.total = existing.qty * existing.unitPrice;
     } else {
       cartItems.push({
-        product_id: selectedProduct.product_id,
+        product_id: selectedProduct.Id,
+        barcode: selectedProduct.barcode,
         name: selectedProduct.name,
-        unitPrice: selectedProduct.price,
+        unitPrice: selectedProduct.sellingPrice,
         qty: qty,
-        total: qty * selectedProduct.price
+        total: qty * selectedProduct.sellingPrice
       });
     }
     updateCartUI();
@@ -172,8 +218,8 @@
  
 
   // Customer handlers
-  function fetchCustomerByPhone(phone) {
-    return customersDB.find(c => c.phone === phone) || null;
+  async function fetchCustomerByPhone(phone) {
+    return await getCustomersInfo(phone) || null;
   }
 
   function displayCustomerDetails(customer) {
@@ -187,11 +233,116 @@
   updateBillPreview();
 }
 
-function handleFetchCustomer() {
+async function getCustomersInfo(phone){
+  try{
+    let response = await fetch(`${BASE_URL}/cashier/getByPhone/${phone}`,{
+      method: "GET",
+      headers: getHeaders()
+    })
+
+    if(!response.ok){
+      if(response.status === 404){
+        return null;
+      }
+      else{
+        alert("Error: " + response.text());
+        return;
+      }
+    }
+
+    return await response.json();
+  }
+  catch(err){
+    console.log(err);
+  }
+}
+
+function buildBillRequest() {
+  return {
+    items: cartItems.map(item => ({
+      barcode: item.barcode,
+      quantity: item.qty
+    })),
+    paidAmount: parseFloat(payNetAmount.innerText.replace('Rs. ', '')) || 0,
+    customerId: currentCustomer ? currentCustomer.customerId : null,
+    cashierId: getCashierId()
+  };
+}
+
+function getCashierId(){
+  return localStorage.getItem("Id");
+}
+
+async function submitBill() {
+  if (cartItems.length === 0) {
+    alert("Cart is empty!");
+    return;
+  }
+
+  const netTotal = parseFloat(payNetAmount.innerText.replace('Rs. ', '')) || 0;
+  const paidAmount = parseFloat(paidAmountInput.value) || 0;
+
+  
+  const billRequest = buildBillRequest();
+  
+  if (paidAmount < netTotal) {
+    alert(`Amount paid (Rs. ${paidAmount}) is less than total amount (Rs. ${netTotal})!`);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/cashier/bill/payment`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(billRequest)
+    });
+
+    if (!response.ok) {
+      const errText = await response.text();
+      alert("Error: " + errText);
+      return;
+    }
+
+    const result = await response.json();
+    console.log("Bill created:", result);
+
+    alert("Bill generated successfully!");
+
+    billCounter ++;
+    const billData = {
+      billNumber: `INV-${result.Id}`,
+      items: [...cartItems],
+      total: netTotal,
+      paidAmount: paidAmount,
+      change: paidAmount - netTotal,
+      customer: currentCustomer ? { ...currentCustomer } : null,
+      paymentMethod: currentPaymentMethod,
+      date: new Date().toLocaleDateString()
+    };
+
+    return billData;
+
+  } catch (err) {
+    console.error(err);
+    alert("Failed to create bill");
+  }
+}
+
+function updatePaymentChange() {
+  const netTotalText = payNetAmount.innerText.replace('Rs. ', '');
+  const netTotal = parseFloat(netTotalText) || 0;
+  const paidAmount = parseFloat(paidAmountInput.value) || 0;
+  const change = Math.max(0, paidAmount - netTotal);
+  changeAmountDisplay.innerText = `Rs. ${change.toFixed(2)}`;
+  
+}
+
+async function handleFetchCustomer() {
   const phone = customerPhoneInput.value.trim();
   if (!phone) { alert("Enter phone number"); return; }
 
-  const existing = fetchCustomerByPhone(phone);
+  const existing = await fetchCustomerByPhone(phone);
+  console.log(existing);
 
   if (existing) {
     displayCustomerDetails(existing);
@@ -207,21 +358,34 @@ function handleFetchCustomer() {
   }
 }
 
-  function saveNewCustomer() {
+  async function saveNewCustomer() {
     const phone = customerPhoneInput.value.trim();
     const name = newCustName.value.trim();
     const address = newCustAddress.value.trim();
     if (!phone || !name) { alert("Name and phone required"); return; }
-    if (fetchCustomerByPhone(phone)) { alert("Customer already exists!"); return; }
-    const newId = `CUST${String(customersDB.length + 1).padStart(3, '0')}`;
-    const newCust = { customer_id: newId, name, phone, address };
-    customersDB.push(newCust);
-    displayCustomerDetails(newCust);
-    newCustomerPanel.style.display = "none";
-    document.getElementById("addCustomerTrigger").style.display = "block";
-    newCustName.value = "";
-    newCustAddress.value = "";
-    alert("Customer registered successfully!");
+    if (await fetchCustomerByPhone(phone)) { alert("Customer already exists!"); return; }
+    try {
+    const response = await fetch(`${BASE_URL}/cashier/customer/addNewCustomer`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({ name, phone, address })
+    });
+    
+    if (response.ok) {
+      const newCustomer = await response.json();
+      displayCustomerDetails(newCustomer);
+      newCustomerPanel.style.display = "none";
+      document.getElementById("addCustomerTrigger").style.display = "block";
+      newCustName.value = "";
+      newCustAddress.value = "";
+      alert("Customer registered successfully!");
+    } else {
+      alert("Failed to register customer");
+    }
+  } catch (err) {
+    console.log(err);
+    alert("Error registering customer");
+  }
   }
 
   // Bill Preview
@@ -240,11 +404,8 @@ function handleFetchCustomer() {
     }
     let totalCart = 0;
     cartItems.forEach(item => totalCart += item.total);
-    const discount = parseFloat(discountInput.value) || 0;
-    const netTotal = Math.max(0, totalCart - discount);
     billTotalSpan.innerText = `Rs. ${totalCart.toFixed(2)}`;
-    billDiscountSpan.innerText = `Rs. ${discount.toFixed(2)}`;
-    billNetSpan.innerText = `Rs. ${netTotal.toFixed(2)}`;
+    billNetSpan.innerText = `Rs. ${totalCart.toFixed(2)}`;
     billMethodSpan.innerText = currentPaymentMethod;
 
     billItemsBody.innerHTML = "";
@@ -262,8 +423,8 @@ function handleFetchCustomer() {
     }
   }
 
-  function printBill() {
-    if (cartItems.length === 0) { alert("Cart empty!"); return; }
+  function printBill(billData) {
+    if (!billData) { alert("Cart empty!"); return; }
     window.print();
   }
 
@@ -281,7 +442,7 @@ function handleFetchCustomer() {
     });
     Quagga.onDetected((data) => {
       const code = data.codeResult.code;
-      const product = findProductByBarcode(code);
+      let product = findProductByBarcode(code);
       if (product) displayProduct(product);
       else alert(`Product with barcode ${code} not found`);
     });
@@ -294,11 +455,11 @@ function handleFetchCustomer() {
   }
 
   // Event Listeners
-  manualLookupBtn.addEventListener("click", () => {
+  manualLookupBtn.addEventListener("click", async () => {
     const code = manualBarcode.value.trim();
     if (!code) return;
-    const prod = findProductByBarcode(code);
-    if (prod) displayProduct(prod);
+    let product = await findProductByBarcode(code);
+    if (product) displayProduct(product);
     else alert("Product not found!");
   });
   startScanner.addEventListener("click", startQuagga);
@@ -306,15 +467,23 @@ function handleFetchCustomer() {
   addToCartBtn.addEventListener("click", addToCartHandler);
   clearProductBtn.addEventListener("click", clearProductDisplay);
   clearCartBtn.addEventListener("click", clearCart);
-  discountInput.addEventListener("input", () => updateCartUI());
-  paidAmountInput.addEventListener("input", updatePaymentChange);
   fetchCustomerBtn.addEventListener("click", handleFetchCustomer);
   showAddCustomerBtn.addEventListener("click", () => {
     newCustomerPanel.style.display = "block";
     showAddCustomerBtn.style.display = "none";
   });
+  paidAmountInput.addEventListener("input", updatePaymentChange)
   saveNewCustomerBtn.addEventListener("click", saveNewCustomer);
-  printBillBtn.addEventListener("click", printBill);
+  printBillBtn.addEventListener("click", async () => {
+    const billData = await submitBill();
+    if(billData){
+      printBill(billData);
+      cartItems = [];
+      updateCartUI();
+      paidAmountInput.value = 0;
+      updatePaymentChange();
+    }
+  });
   const radios = document.querySelectorAll('input[name="paymentMethod"]');
   radios.forEach(radio => {
     radio.addEventListener("change", (e) => {
@@ -328,7 +497,8 @@ function handleFetchCustomer() {
   // Initial load
   clearProductDisplay();
   updateCartUI();
+  username;
   paidAmountInput.value = 0;
-  changeAmountDisplay.value = "Rs. 0.00";
+  changeAmountDisplay.innerText = "Rs. 0.00";
   billCashier.innerText = document.getElementById("cashierName").innerText;
   updateBillPreview();
