@@ -2,15 +2,17 @@
 
 import { BASE_URL } from './config.js';
 
-
 const token = localStorage.getItem("token");
 
 if(!token){
     window.location.replace("login.html");
 }
 
+let allProducts = [];
+
 window.addEventListener("DOMContentLoaded", ()=>{
     loadAvailableYears();
+    document.getElementById("searchInput").addEventListener("input", handleSearch);
 })
 
 window.handleDropdown = function (select) {
@@ -92,6 +94,7 @@ async function getData(){
             alert(response);
         }else{
             pageData = await response.json();
+            allProducts = pageData.products;
         }
 
         loadStats(pageData.salesSummary);
@@ -103,6 +106,17 @@ async function getData(){
     }
 }
 
+function handleSearch(e){
+    const searchValue = e.target.value.toLowerCase();
+
+    const filtered = allProducts.filter(product =>
+        product.productName.toLowerCase().includes(searchValue)
+    );
+
+    currentPage = 1; // reset to first page
+    renderTable(filtered);
+}
+
 async function loadStats(salesSummary){
     document.querySelector('.total-sales').innerText = "Rs " + salesSummary.totalSales;
     document.querySelector('.total-cost').innerText = "Rs " + salesSummary.totalCost;
@@ -111,6 +125,8 @@ async function loadStats(salesSummary){
 }
 
 function renderTable(products){
+    pageData.products = products; // update current dataset
+
     let tableBody = document.querySelector('#table tbody');
     tableBody.innerHTML = "";
 
@@ -128,9 +144,10 @@ function renderTable(products){
                 <td>${data.avgSellingPrice}</td>
                 <td>${data.totalProfit}</td>
             </tr>
-        `
-        tableBody.innerHTML +=row;
+        `;
+        tableBody.innerHTML += row;
     });
+
     renderPagination();
 }
 
