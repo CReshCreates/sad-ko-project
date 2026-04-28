@@ -31,7 +31,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         if (request.getMethod().equalsIgnoreCase("OPTIONS")) {
-            response.setStatus(HttpServletResponse.SC_OK);
+            filterChain.doFilter(request,response);
             return;
         }
 
