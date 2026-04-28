@@ -12,13 +12,13 @@ window.handleDropdown = function(select){
     localStorage.removeItem("role");
     localStorage.removeItem("username");
     localStorage.removeItem("cashierId");
-        window.location.href = ("login.html");
+        window.location.href = ("/pages/index.html");
     }
 }
 
 const token = localStorage.getItem("token");
 if(!token){
-    window.location.replace("login.html");
+    window.location.replace("/pages/index.html");
 }
 
 let data = [];
