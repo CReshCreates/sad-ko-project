@@ -27,11 +27,6 @@ public class SecurityConfig {
     private JwtFilter jwtFilter;
 
     @Bean
-    public CorsFilter corsFilter(CorsConfigurationSource source) {
-        return new CorsFilter(source);
-    }
-
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
                                                    CorsConfigurationSource corsConfigurationSource) throws Exception {
 
