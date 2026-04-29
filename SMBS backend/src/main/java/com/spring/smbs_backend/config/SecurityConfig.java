@@ -33,7 +33,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers( "/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/login").permitAll()
                         .requestMatchers( "/admin/**").hasRole("ADMIN")
                         .requestMatchers("/cashier/**").hasRole("CASHIER").
                         requestMatchers("/product/getByCode/**", "/getCashierById/").hasAnyRole("ADMIN", "CASHIER")
