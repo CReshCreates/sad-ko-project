@@ -20,7 +20,7 @@ public class CorsConfig {
         config.setAllowedOrigins(List.of(
             "http://192.168.1.75:5500", 
             "http://127.0.0.1:5500", 
-            "https://sup-bill.netlify.app"
+            "https://sup-bill.up.railway.app"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
