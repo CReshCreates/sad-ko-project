@@ -32,23 +32,4 @@ public class CorsConfig {
 
         return source;
     }
-    
-    @Bean
-    public WebMvcConfigurer webMvcConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOrigins(
-                        "http://192.168.1.75:5500",
-                        "http://127.0.0.1:5500",
-                        "https://sup-bill.up.railway.app"
-                    )
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowedHeaders("*")
-                    .allowCredentials(true)
-                    .maxAge(3600);
-            }
-        };
-    }
 }
