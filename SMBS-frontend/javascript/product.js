@@ -14,6 +14,11 @@ window.addEventListener("DOMContentLoaded", ()=>{
     })
 })
 
+const token = localStorage.getItem("token");
+if(!token){
+    window.location.replace("/index.html");
+}
+
 
 window.handleDropdown = function(select){
     if (select.value === "logout") {
@@ -21,7 +26,7 @@ window.handleDropdown = function(select){
         localStorage.removeItem("role");
         localStorage.removeItem("username");
         localStorage.removeItem("cashierId");
-        window.location.href = "login.html";
+        window.location.href = "/index.html";
     }
 }
 
