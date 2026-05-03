@@ -40,8 +40,8 @@ public interface DashboardRepository extends JpaRepository<Bill, Integer> {
     FROM bill b
     JOIN bill_items bi ON b.bill_id = bi.bill_id
     WHERE YEAR(b.created_at) >= YEAR(CURDATE()) - 4
-    GROUP BY YEAR(b.created_at)
-    ORDER BY YEAR(b.created_at) DESC
+    GROUP BY CAST(YEAR(b.created_at) AS SIGNED)
+    ORDER BY CAST(YEAR(b.created_at) AS SIGNED) DESC
     """, nativeQuery = true)
     List<SalesOverview> getSalesOverview();
 
@@ -66,8 +66,8 @@ public interface DashboardRepository extends JpaRepository<Bill, Integer> {
     FROM bill b
     WHERE b.customer_id IS NOT NULL
         AND YEAR(b.created_at) >= YEAR(CURDATE()) - 4
-    GROUP BY YEAR(b.created_at)
-    ORDER BY YEAR(b.created_at) ASC
+    GROUP BY CAST(YEAR(b.created_at) AS SIGNED)
+    ORDER BY CAST(YEAR(b.created_at) AS SIGNED) ASC
     """, nativeQuery = true)
     List<CustomerGrowthData> getCustomerGrowthData();
 
