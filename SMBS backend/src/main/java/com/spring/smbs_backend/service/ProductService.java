@@ -76,16 +76,14 @@ public class ProductService {
         existingProduct.setName(updatedProduct.getName());
         existingProduct.setSellingPrice(updatedProduct.getSellingPrice());
         existingProduct.setBarcode(updatedProduct.getBarcode());
+        existingProduct.setDeleted(updatedProduct.isDeleted());
 
         return productsRepository.save(existingProduct);
     }
 
     public Product deleteProductByBarcode(String barcode){
         try{
-            Product product = getProductsByBarcode(barcode);
-
-            product.setDeleted(true);
-            return productsRepository.save(product);
+            return productsRepository.deleteByBarcode(barcode);
         }catch(Exception e){
             return null;
         }
