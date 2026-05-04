@@ -78,9 +78,11 @@ public class ProductController {
 
     @DeleteMapping("/admin/deleteProduct/{barcode}")
     public ResponseEntity<?> deleteProductByBarcode(@PathVariable String barcode){
-        Product product = productsService.deleteProductByBarcode(barcode);
-        if(product!=null)
+        Product product = productsService.getProductsByBarcode(barcode);
+        if(product!=null){
+            productsService.deleteProductByBarcode(barcode);
             return new ResponseEntity<>("Deleted", HttpStatus.OK);
+        }
         else
             return new ResponseEntity<>("Failed to update", HttpStatus.INTERNAL_SERVER_ERROR);
     }
