@@ -77,14 +77,14 @@ public class ProductController {
     }
 
     @DeleteMapping("/admin/deleteProduct/{barcode}")
-    public Product deleteProductByBarcode(String barcode){
-        try{
-            Product product = getProductsByBarcode(barcode);
-
+    public ResponseEntity<?> deleteProductByBarcode(@PathVariable String barcode){
+        Product product = productsService.getProductsByBarcode(barcode);
+        if(product != null){
             product.setDeleted(true);
-            return productsRepository.save(product);
-        }catch(Exception e){
-            return null;
+            Product updatedProduct = productsService.updateProductByBarcode(barcode, product);
+            return new ResponseEntity<>(updatedProduct, HttpStatus.OK);
         }
+        else
+            return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
     }
 }
